@@ -193,8 +193,18 @@
           const enabledHours = [...Array(24)]
             .map((_, i) => i)
             .filter(h => h >= minEnabledHour && h <= maxEnabledHour)
+        // added to resolve a bug where time was invalidted bc tmpHour is null... couldn't find why
+        let tmp = this.hour
+        if (!tmp) {
+          const tmpHour = parseInt(moment(this.value, this.format).format('HH'))
+          const hourToSet = this.isTwelveFormat && (tmpHour === 12 || tmpHour === 0)
+            ? tmpHour === 0 ? 12 : 24
+            : tmpHour
 
-          if (!enabledHours.includes(this.hour)) {
+          tmp = hourToSet
+        }
+        
+        if (!enabledHours.includes(tmp)) {
             this.hour = enabledHours[0] // eslint-disable-line
             this.emitValue()
           }
